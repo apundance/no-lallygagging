@@ -72,27 +72,6 @@ I used ChatGPT for a lot of this since it's like a one-off project that I don't 
    ```bash
    python3
    ```
-
-## Installing Packages with pip
-
-Install a package:
-
-```bash
-pip install requests
-```
-
-On some macOS systems:
-
-```bash
-pip3 install requests
-```
-
-Example:
-
-```bash
-pip install numpy pandas matplotlib
-```
-
 ---
 
 ## Troubleshooting
