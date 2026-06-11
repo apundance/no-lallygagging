@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import tkinter.font as tkfont
 import random
+from services.quiz_utils import get_blank_indices
 
 from core.base_screen import BaseScreen
 
@@ -21,6 +22,7 @@ class QuizScreen(BaseScreen):
         self.book_var = tk.StringVar()
         self.chapter_var = tk.StringVar()
         self.verse_range_var = tk.StringVar()
+        self.difficulty_var = tk.StringVar(value="Medium")
 
         # sets the default/initial size
         self.font_size_var = tk.IntVar(value=22)
@@ -103,6 +105,33 @@ class QuizScreen(BaseScreen):
         tk.Entry(range_frame, textvariable=self.verse_range_var, width=25).pack(side=tk.LEFT, padx=5)
 
         tk.Label(range_frame, text="e.g. 1-10 or 1,3,5", fg="gray", bg="#1e1e1e").pack(side=tk.LEFT)
+
+        # ---------------- DIFFICULTY ---------------- #
+        difficulty_frame = tk.Frame(self, bg="#1e1e1e")
+        difficulty_frame.pack(fill=tk.X, padx=5, pady=5)
+
+        tk.Label(
+            difficulty_frame,
+            text="Difficulty:",
+            fg="white",
+            bg="#1e1e1e"
+        ).pack(side=tk.LEFT)
+
+        self.difficulty_menu = ttk.Combobox(
+            difficulty_frame,
+            textvariable=self.difficulty_var,
+            state="readonly",
+            width=15,
+            values=[
+                "Wittle Baby",
+                "Easy",
+                "Medium",
+                "Hard",
+                "All"
+            ]
+        )
+
+        self.difficulty_menu.pack(side=tk.LEFT, padx=5)
 
         # ---------------- BUTTONS ---------------- #
         btns = tk.Frame(self, bg="#1e1e1e")
@@ -234,8 +263,10 @@ class QuizScreen(BaseScreen):
             if len(words) <= 2:
                 continue
 
-            count = max(1, len(words) // 4)
-            blank_indexes = random.sample(range(len(words)), count)
+            blank_indexes = get_blank_indices(
+                words,
+                difficulty_percent=self.get_difficulty_percent()
+            )
 
             blanks = []
 
@@ -379,3 +410,15 @@ class QuizScreen(BaseScreen):
         # If quiz is displayed, rerender blanks with new size
         if self.quiz_data:
             self.render()
+
+    def get_difficulty_percent(self):
+        return {
+            "Wittle Baby": 10,
+            "Easy": 25,
+            "Medium": 50,
+            "Hard": 75,
+            "All": 100
+        }.get(
+            self.difficulty_var.get(),
+            25
+        )
